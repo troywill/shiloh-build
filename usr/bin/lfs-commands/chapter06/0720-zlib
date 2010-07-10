@@ -1,13 +1,35 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
-sed -i 's/ifdef _LARGEFILE64_SOURCE/ifndef _LARGEFILE64_SOURCE/' zlib.h
-CFLAGS='-mstackrealign -fPIC -O3' ./configure --prefix=/usr
-make
-make install
-mv -v /usr/lib/libz.so.* /lib
-ln -sfv ../../lib/libz.so.1.2.5 /usr/lib/libz.so
-echo -e "\n\nTotalseconds: $SECONDS\n"
+do_010 () {
+    sed -i 's/ifdef _LARGEFILE64_SOURCE/ifndef _LARGEFILE64_SOURCE/' zlib.h
+}
+
+do_020 () {
+    CFLAGS='-mstackrealign -fPIC -O3' ./configure --prefix=/usr
+}
+
+do_030_make () {
+    make
+}
+
+do_040_make_install () {
+    make install
+}
+
+do_050 () {
+    mv -v /usr/lib/libz.so.* /lib
+}
+
+do_060 () {
+    ln -sfv ../../lib/libz.so.1.2.5 /usr/lib/libz.so
+}
+
+do_010
+do_020
+do_030_make
+# do_040_make_install
+# do_050
+# do_060
 exit
