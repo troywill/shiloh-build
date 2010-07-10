@@ -107,11 +107,11 @@ do_110 () {
 EOF
 }
 
-# do_010
-# do_020_patch
-# do_030
-# do_040
-# do_045_make
-# do_050
+do_010
+do_020_patch
+do_030
+do_040
+do_045_make
+do_050
 do_060_make_check
 exit
