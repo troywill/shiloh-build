@@ -1,6 +1,6 @@
 #!/bin/bash
 set +h
-set -o errexit
+LFS=$1
 
 mkdir -v $LFS/{dev,proc,sys}
 mknod --mode 600 $LFS/dev/console c 5 1

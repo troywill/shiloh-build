@@ -2,6 +2,8 @@
 set +h
 set -o errexit
 
+DESTDIR=/stow/zlib-1.2.5
+
 do_010 () {
     sed -i 's/ifdef _LARGEFILE64_SOURCE/ifndef _LARGEFILE64_SOURCE/' zlib.h
 }
@@ -15,7 +17,7 @@ do_030_make () {
 }
 
 do_040_make_install () {
-    make install
+    make install prefix=${DESTDIR}
 }
 
 do_050 () {
@@ -26,10 +28,10 @@ do_060 () {
     ln -sfv ../../lib/libz.so.1.2.5 /usr/lib/libz.so
 }
 
-do_010
-do_020
-do_030_make
-# do_040_make_install
+# do_010
+# do_020
+# do_030_make
+do_040_make_install
 # do_050
 # do_060
 exit

@@ -1,6 +1,8 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
+
+LFS=$1
 
 chroot "$LFS" /usr/bin/env -i \
     HOME=/root TERM="$TERM" PS1='\u:\w\$ ' \
