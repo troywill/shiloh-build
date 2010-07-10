@@ -1,29 +1,71 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
-DL=$(readelf -l /bin/sh | sed -n 's@.*interpret.*/tools\(.*\)]$@\1@p')
-sed -i "s|libs -o|libs -L/usr/lib -Wl,-dynamic-linker=$DL -o|" \
+CFLAGS_STRING='CFLAGS += -march=i686 -mtune=native -O3 -pipe'
+
+do_010 () {
+    DL=$(readelf -l /bin/sh | sed -n 's@.*interpret.*/tools\(.*\)]$@\1@p')
+    sed -i "s|libs -o|libs -L/usr/lib -Wl,-dynamic-linker=$DL -o|" \
         scripts/test-installation.pl
-unset DL
-sed -i 's|@BASH@|/bin/bash|' elf/ldd.bash.in
-patch -Np1 -i ../glibc-2.11.2-gcc_fix-1.patch
-mkdir -v ../glibc-build
-cd ../glibc-build
-case `uname -m` in
-  i?86) echo "CFLAGS += -march=i486 -mtune=native -O3 -pipe" > configparms ;;
-esac
-../glibc-2.11.2/configure --prefix=/usr \
-    --disable-profile --enable-add-ons \
-    --enable-kernel=2.6.22.5 --libexecdir=/usr/lib/glibc
-make
-cp -v ../glibc-2.11.2/iconvdata/gconv-modules iconvdata
-make -k check >> $TEST_LOG 2>&1 || true
-touch /etc/ld.so.conf
-make install
-make localedata/install-locales
-cat > /etc/nsswitch.conf << "EOF"
+    unset DL
+    sed -i 's|@BASH@|/bin/bash|' elf/ldd.bash.in
+}
+
+do_020 () {
+    patch -Np1 -i ../glibc-2.11.2-gcc_fix-1.patch
+}
+
+do_030 () {
+    mkdir -v ../glibc-build
+    cd ../glibc-build
+    case `uname -m` in
+	i?86) echo ${CFLAGS_STRING} > configparms ;;
+    esac
+    cd -
+}
+
+do_040 () {
+    cd ../glibc-build
+    ../glibc-2.11.2/configure --prefix=/usr \
+	--disable-profile --enable-add-ons \
+	--enable-kernel=2.6.22.5 --libexecdir=/usr/lib/glibc
+    cd -
+}
+
+do_045_make () {
+    cd ../glibc-build
+    make
+    cd -
+}
+
+do_050 () {
+    cd ../glibc-build
+    cp -v ../glibc-2.11.2/iconvdata/gconv-modules iconvdata
+    cd -
+}
+
+do_060 () {
+    cd ../glibc-build
+    make -k check >> $TEST_LOG 2>&1 || true
+    cd -
+}
+
+do_070 () {
+    cd ../glibc-build
+    touch /etc/ld.so.conf
+    cd -
+}
+
+do_080_make_install () {
+    cd ../glibc-build
+    make install
+    make localedata/install-locales
+    cd -
+}
+
+do_090 () {
+    cat > /etc/nsswitch.conf << "EOF"
 # Begin /etc/nsswitch.conf
 
 passwd: files
@@ -40,9 +82,15 @@ rpc: files
 
 # End /etc/nsswitch.conf
 EOF
-cp -v --remove-destination /usr/share/zoneinfo/GMT \
-    /etc/localtime
-cat > /etc/ld.so.conf << "EOF"
+}
+
+do_100 () {
+    cp -v --remove-destination /usr/share/zoneinfo/GMT \
+	/etc/localtime
+}
+
+do_110 () {
+    cat > /etc/ld.so.conf << "EOF"
 # Begin /etc/ld.so.conf
 
 /usr/local/lib
@@ -50,5 +98,12 @@ cat > /etc/ld.so.conf << "EOF"
 
 # End /etc/ld.so.conf
 EOF
-echo -e "\n\nTotalseconds: $SECONDS\n"
+}
+
+do_010
+do_020
+do_030
+do_040
+do_045_make
+
 exit
