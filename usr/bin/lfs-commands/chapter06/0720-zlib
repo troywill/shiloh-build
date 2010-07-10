@@ -17,7 +17,7 @@ do_030_make () {
 }
 
 do_040_make_install () {
-    make install prefix=${DESTDIR}
+    make install prefix=${DESTDIR}/usr
 }
 
 do_050 () {
@@ -28,9 +28,9 @@ do_060 () {
     ln -sfv ../../lib/libz.so.1.2.5 /usr/lib/libz.so
 }
 
-# do_010
-# do_020
-# do_030_make
+do_010
+do_020
+do_030_make
 do_040_make_install
 # do_050
 # do_060

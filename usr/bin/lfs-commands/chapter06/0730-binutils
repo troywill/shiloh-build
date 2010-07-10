@@ -1,18 +1,59 @@
 #!/bin/bash
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/binutils.html
 set +h
-set -e
+set -o errexit
+TEST_LOG='TEST_LOG'
+DESTDIR='/stow/binutils-2.20.1'
 
-cd $PKGDIR
-expect -c "spawn ls" >> $TEST_LOG
-rm -fv etc/standards.info
-sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
-mkdir -v ../binutils-build
-cd ../binutils-build
-../binutils-2.20.1/configure --prefix=/usr \
-    --enable-shared
-make tooldir=/usr
-make -k check >> $TEST_LOG 2>&1 || true
-make tooldir=/usr install
-cp -v ../binutils-2.20.1/include/libiberty.h /usr/include
-echo -e "\n\nTotalseconds: $SECONDS\n"
+# expect -c "spawn ls" >> $TEST_LOG
+do_010_suppress () {
+    # Suppress the installation of an outdated standards.info file as a
+    # newer one is installed later on in the Autoconf instructions:
+    rm -fv etc/standards.info
+    sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
+}
+
+do_020_setup () {
+    # The Binutils documentation recommends building Binutils outside
+    # of the source directory in a dedicated build directory
+    mkdir -v ../binutils-build
+}
+
+do_030_configure () {
+    cd ../binutils-build
+    ../binutils-2.20.1/configure --prefix=/usr \
+	--enable-shared
+    cd -
+}
+
+do_040_build () {
+    cd ../binutils-build
+    make tooldir=/usr
+    cd -
+}
+
+
+do_050_make_check () {
+    cd ../binutils-build
+    make -k check >> $TEST_LOG 2>&1 || true
+    cd -
+}
+
+do_060_make_install () {
+    cd ../binutils-build
+    make DESTDIR=${DESTDIR} tooldir=/usr install
+    cd -
+}
+
+do_070 () {
+    cp -v ../binutils-2.20.1/include/libiberty.h ${DESTDIR}/usr/include
+}
+
+do_010_suppress
+do_020_setup
+do_030_configure
+do_040_build
+do_060_make_install
+do_070
+
 exit
