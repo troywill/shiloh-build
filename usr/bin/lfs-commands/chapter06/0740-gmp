@@ -2,11 +2,26 @@
 set +h
 set -o errexit
 
-./configure --prefix=/usr --enable-cxx --enable-mpbsd
-make
-make install
-mkdir -v /usr/share/doc/gmp-5.0.1
-cp    -v doc/{isa_abi_headache,configuration} doc/*.html \
-         /usr/share/doc/gmp-5.0.1
-echo -e "\n\nTotalseconds: $SECONDS\n"
+do_010_configure () {
+    ./configure --prefix=/usr --enable-cxx --enable-mpbsd
+}
+
+do_020_make () {
+    make
+}
+
+do_030_make_install () {
+    make DESTDIR=/gmp-5.0.1 install
+}
+
+do_040 () {
+    mkdir -v /usr/share/doc/gmp-5.0.1
+    cp -v doc/{isa_abi_headache,configuration} doc/*.html \
+        /usr/share/doc/gmp-5.0.1
+}
+
+do_010_configure
+do_020_make
+do_030_make_install
+
 exit
