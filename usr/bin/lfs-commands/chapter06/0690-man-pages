@@ -1,8 +1,7 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
-make install
-echo -e "\n\nTotalseconds: $SECONDS\n"
+make DESTDIR=/stow/man-pages-3.25 install
+
 exit
