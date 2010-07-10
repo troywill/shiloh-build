@@ -1,14 +1,13 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
 mkdir -v $LFS/{dev,proc,sys}
-mknod -m 600 $LFS/dev/console c 5 1
-mknod -m 666 $LFS/dev/null c 1 3
+mknod --mode 600 $LFS/dev/console c 5 1
+mknod --mode 666 $LFS/dev/null c 1 3
 mount -v --bind /dev $LFS/dev
-mount -vt devpts devpts $LFS/dev/pts
-mount -vt tmpfs shm $LFS/dev/shm
-mount -vt proc proc $LFS/proc
-mount -vt sysfs sysfs $LFS/sys
-echo -e "\n\nTotalseconds: $SECONDS\n"
+mount -v --types devpts devpts $LFS/dev/pts
+mount -v --types tmpfs shm $LFS/dev/shm
+mount -v --types proc proc $LFS/proc
+mount -v --types sysfs sysfs $LFS/sys
 exit
