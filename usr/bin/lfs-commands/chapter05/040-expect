@@ -1,0 +1,14 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+patch -Np1 -i ../expect-5.44.1.15-no_tk-1.patch
+cp -v configure{,.orig}
+sed 's:/usr/local/bin:/bin:' configure.orig > configure
+./configure --prefix=/tools --with-tcl=/tools/lib \
+  --with-tclinclude=/tools/include --with-tk=no
+make
+make SCRIPTS="" install
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

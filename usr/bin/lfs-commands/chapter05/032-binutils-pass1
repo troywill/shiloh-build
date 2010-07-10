@@ -1,0 +1,17 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+mkdir -v ../binutils-build
+cd ../binutils-build
+../binutils-2.20.1/configure \
+    --target=$LFS_TGT --prefix=/tools \
+    --disable-nls --disable-werror
+make
+case $(uname -m) in
+  x86_64) mkdir -v /tools/lib && ln -sv lib /tools/lib64 ;;
+esac
+make install
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

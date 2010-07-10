@@ -1,0 +1,23 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+tar -xvf ../udev-config-20100128.tar.bz2
+tar -xvf ../udev-158-testfiles.tar.bz2 --strip-components=1
+if [[ ! -d /lib/udev/devices ]] ; then
+install -dv /lib/{firmware,udev/devices/{pts,shm}}
+mknod -m0666 /lib/udev/devices/null c 1 3
+fi
+./configure --prefix=/usr \
+    --sysconfdir=/etc --sbindir=/sbin \
+    --with-rootlibdir=/lib --libexecdir=/lib/udev \
+    --disable-extras --disable-introspection
+make
+make install
+rmdir -v /usr/share/doc/udev
+cd udev-config-20100128
+make install
+make install-doc
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

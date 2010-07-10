@@ -1,0 +1,12 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+patch -Np1 -i ../bash-4.1-fixes-2.patch
+./configure --prefix=/tools --without-bash-malloc
+make
+make install
+ln -vs bash /tools/bin/sh
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

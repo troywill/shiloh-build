@@ -1,0 +1,12 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+patch -Np1 -i ../bison-2.4.2-gcc-1.patch
+./configure --prefix=/usr
+echo '#define YYENABLE_NLS 1' >> lib/config.h
+make
+make install
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

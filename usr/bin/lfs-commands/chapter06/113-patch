@@ -1,0 +1,11 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+patch -Np1 -i ../patch-2.6.1-test_fix-1.patch
+./configure --prefix=/usr
+make
+make install
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

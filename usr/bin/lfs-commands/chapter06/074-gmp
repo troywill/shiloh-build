@@ -1,0 +1,13 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+./configure --prefix=/usr --enable-cxx --enable-mpbsd
+make
+make install
+mkdir -v /usr/share/doc/gmp-5.0.1
+cp    -v doc/{isa_abi_headache,configuration} doc/*.html \
+         /usr/share/doc/gmp-5.0.1
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

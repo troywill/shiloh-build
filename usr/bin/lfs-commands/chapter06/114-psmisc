@@ -1,0 +1,12 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+./configure --prefix=/usr
+make
+make install
+mv /usr/bin/killall /bin
+ln -sv killall /bin/pidof
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

@@ -1,0 +1,12 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+./configure --prefix=/usr
+make
+make install
+make install-compat
+install-info --dir-file=/usr/info/dir /usr/info/gdbm.info
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

@@ -1,0 +1,12 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+./configure --prefix=/usr --bindir=/bin
+make
+make install
+mv -v /bin/{gzexe,uncompress,zcmp,zdiff,zegrep} /usr/bin
+mv -v /bin/{zfgrep,zforce,zgrep,zless,zmore,znew} /usr/bin
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

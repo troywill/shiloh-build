@@ -1,0 +1,13 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+patch -Np1 -i ../bash-4.1-fixes-2.patch
+./configure --prefix=/usr --bindir=/bin \
+    --htmldir=/usr/share/doc/bash-4.1 --without-bash-malloc \
+    --with-installed-readline
+make
+make install
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

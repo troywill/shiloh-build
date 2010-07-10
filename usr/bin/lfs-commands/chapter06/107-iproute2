@@ -1,0 +1,11 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+sed -i '/^TARGETS/s@arpd@@g' misc/Makefile
+make DESTDIR=
+make DESTDIR= SBINDIR=/sbin MANDIR=/usr/share/man \
+     DOCDIR=/usr/share/doc/iproute2-2.6.34 install
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

@@ -1,0 +1,10 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+patch -Np1 -i ../procps-3.2.8-watch_unicode-1.patch
+make
+make install
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

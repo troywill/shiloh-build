@@ -1,0 +1,11 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+./configure --prefix=/tools --enable-install-program=hostname
+make
+make install
+cp -v src/su /tools/bin/su-tools
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

@@ -1,0 +1,20 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+case `uname -m` in
+ i?86 | x86_64) patch -Np1 -i ../coreutils-8.5-uname-2.patch ;;
+esac
+patch -Np1 -i ../coreutils-8.5-i18n-1.patch
+./configure --prefix=/usr \
+    --enable-no-install-program=kill,uptime
+make
+make install
+mv -v /usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} /bin
+mv -v /usr/bin/{false,ln,ls,mkdir,mknod,mv,pwd,rm} /bin
+mv -v /usr/bin/{rmdir,stty,sync,true,uname} /bin
+mv -v /usr/bin/chroot /usr/sbin
+mv -v /usr/bin/{head,sleep,nice} /bin
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit

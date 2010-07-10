@@ -1,0 +1,12 @@
+#!/bin/bash
+set +h
+set -e
+
+cd $PKGDIR
+patch -Np1 -i ../make-3.81-upstream_fixes-1.patch
+sed -i -e 's/-j/ -j/' tests/scripts/features/recursion
+./configure --prefix=/usr
+make
+make install
+echo -e "\n\nTotalseconds: $SECONDS\n"
+exit
