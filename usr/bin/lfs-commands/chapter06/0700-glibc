@@ -3,6 +3,9 @@ set +h
 set -o errexit
 
 CFLAGS_STRING='CFLAGS += -march=i686 -mtune=native -O3 -pipe'
+TEST_LOG='TEST_LOG'
+DESTDIR='/stow/glibc-2.11.2'
+TIMEOUTFACTOR=16
 
 do_010 () {
     DL=$(readelf -l /bin/sh | sed -n 's@.*interpret.*/tools\(.*\)]$@\1@p')
@@ -45,9 +48,9 @@ do_050 () {
     cd -
 }
 
-do_060 () {
+do_060_make_check () {
     cd ../glibc-build
-    make -k check >> $TEST_LOG 2>&1 || true
+    TIMEOUTFACTOR=${TIMEOUTFACTOR} make -k check >> $TEST_LOG 2>&1 || true
     cd -
 }
 
@@ -59,12 +62,16 @@ do_070 () {
 
 do_080_make_install () {
     cd ../glibc-build
-    make install
+    make install_root=${DESTDIR} install
+    cd -
+}
+do_100_make_install_locales () {
+    cd ../glibc-build
     make localedata/install-locales
     cd -
 }
 
-do_090 () {
+do_110 () {
     cat > /etc/nsswitch.conf << "EOF"
 # Begin /etc/nsswitch.conf
 
@@ -100,10 +107,11 @@ do_110 () {
 EOF
 }
 
-do_010
-do_020
-do_030
-do_040
-do_045_make
-
+# do_010
+# do_020
+# do_030
+# do_040
+# do_045_make
+# do_050
+do_060_make_check
 exit
