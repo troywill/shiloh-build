@@ -1,13 +1,28 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
-./configure --prefix=/usr --enable-thread-safe \
-  --docdir=/usr/share/doc/mpfr-3.0.0
-make
-make install
-make html
-make install-html
-echo -e "\n\nTotalseconds: $SECONDS\n"
+do_010_configure () {
+    ./configure --prefix=/usr --enable-thread-safe \
+	--docdir=/usr/share/doc/mpfr-3.0.0
+}
+
+do_020_make () {
+    make
+}
+
+do_030_make_install () {
+    make install
+}
+
+do_040 () {
+    make html
+    make install-html
+}
+
+do_010_configure
+do_020_make
+# do_030_make_install
+# do_040
+
 exit
