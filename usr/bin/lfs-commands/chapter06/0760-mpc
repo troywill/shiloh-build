@@ -1,10 +1,17 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
-./configure --prefix=/usr
-make
-make install
-echo -e "\n\nTotalseconds: $SECONDS\n"
+do_010_configure () {
+    ./configure --prefix=/usr
+}
+
+do_020_make () {
+    make
+}
+
+do_030_make_install () {
+    make DESTDIR=/stow/mpc-0.8.2 install
+}
+
 exit
