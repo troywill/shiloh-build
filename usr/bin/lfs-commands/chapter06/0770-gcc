@@ -5,6 +5,7 @@ set -o errexit
 # http://www.linuxfromscratch.org/lfs/view/development/chapter06/gcc.html
 
 BUILD_DIR='../gcc-build'
+DESTDIR='/stow/gcc-4.5.0'
 
 do_010_sed () {
     sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
@@ -49,7 +50,7 @@ do_060 () {
 
 do_070_make_install () {
     cd ${BUILD_DIR}
-    make install
+    make DESTDIR=${DESTDIR} install
     cd -	
 }
 
@@ -74,11 +75,11 @@ do_090 () {
     cd -
 }
 
-do_010_sed
-do_020_mkdir
-do_030_configure
-do_040_make
+# do_010_sed
+# do_020_mkdir
+# do_030_configure
+# do_040_make
 # do_050_make_check
-
+do_070_make_install
 
 exit
