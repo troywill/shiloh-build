@@ -1,10 +1,9 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
 ./configure --prefix=/usr
-make
-make install
-echo -e "\n\nTotalseconds: $SECONDS\n"
+make 
+make DESTDIR=/stow/pkg-config install
+
 exit

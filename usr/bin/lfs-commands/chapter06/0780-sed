@@ -1,12 +1,28 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
-./configure --prefix=/usr --bindir=/bin --htmldir=/usr/share/doc/sed-4.2.1
-make
-make html
-make install
-make -C doc install-html
-echo -e "\n\nTotalseconds: $SECONDS\n"
+PACKAGE='sed-4.2.1'
+
+do_010_configure () {
+    ./configure --prefix=/usr --bindir=/bin --htmldir=/usr/share/doc/${PACKAGE}
+}
+
+do_020_make () {
+    make html
+}
+
+do_030_make_install () {
+    make DESTDIR=/stow/${PACKAGE} install
+}
+
+do_040_make_install_html () {
+    make -C doc install-html
+}
+
+do_010_configure
+do_020_make
+do_030_make_install
+do_040_make_install_html
+
 exit

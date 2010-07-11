@@ -2,6 +2,8 @@
 set +h
 set -o errexit
 
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/gcc.html
+
 BUILD_DIR='../gcc-build'
 
 do_010_sed () {
@@ -71,5 +73,12 @@ do_090 () {
     rm -v dummy.c a.out dummy.log
     cd -
 }
+
+do_010_sed
+do_020_mkdir
+do_030_configure
+do_040_make
+# do_050_make_check
+
 
 exit
