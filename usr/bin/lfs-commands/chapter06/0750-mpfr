@@ -2,6 +2,8 @@
 set +h
 set -o errexit
 
+DESTDIR=/stow/mpfr-3.0.0
+
 do_010_configure () {
     ./configure --prefix=/usr --enable-thread-safe \
 	--docdir=/usr/share/doc/mpfr-3.0.0
@@ -12,17 +14,17 @@ do_020_make () {
 }
 
 do_030_make_install () {
-    make install
+    make DESTDIR=${DESTDIR} install
 }
 
 do_040 () {
     make html
-    make install-html
+    make DESTDIR=${DESTDIR} install-html
 }
 
 do_010_configure
 do_020_make
-# do_030_make_install
-# do_040
+do_030_make_install
+do_040
 
 exit
