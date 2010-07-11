@@ -1,35 +1,75 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
-sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
-case `uname -m` in
-  i?86) sed -i 's/^T_CFLAGS =$/& -fomit-frame-pointer/' \
-        gcc/Makefile.in ;;
-esac
-sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
-mkdir -v ../gcc-build
-cd ../gcc-build
-../gcc-4.5.0/configure --prefix=/usr \
-    --libexecdir=/usr/lib --enable-shared \
-    --enable-threads=posix --enable-__cxa_atexit \
-    --enable-clocale=gnu --enable-languages=c,c++ \
-    --disable-multilib --disable-bootstrap
-make
-make -k check >> $TEST_LOG 2>&1 || true
-../gcc-4.5.0/contrib/test_summary >> $TEST_LOG
-make install
-ln -sv ../usr/bin/cpp /lib
-ln -sv gcc /usr/bin/cc
-echo 'main(){}' > dummy.c
-cc dummy.c -v -Wl,--verbose &> dummy.log
-readelf -l a.out | grep ': /lib'
-grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
-grep -B4 '^ /usr/include' dummy.log
-grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
-grep "/lib.*/libc.so.6 " dummy.log
-grep found dummy.log
-rm -v dummy.c a.out dummy.log
-echo -e "\n\nTotalseconds: $SECONDS\n"
+BUILD_DIR='../gcc-build'
+
+do_010_sed () {
+    sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
+    case `uname -m` in
+	i?86) sed -i 's/^T_CFLAGS =$/& -fomit-frame-pointer/' \
+            gcc/Makefile.in ;;
+    esac
+    sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
+}
+
+do_020_mkdir () {
+    mkdir -v ${BUILD_DIR}
+}
+
+do_030_configure () {
+    cd ${BUILD_DIR}
+    ../gcc-4.5.0/configure --prefix=/usr \
+	--libexecdir=/usr/lib --enable-shared \
+	--enable-threads=posix --enable-__cxa_atexit \
+	--enable-clocale=gnu --enable-languages=c,c++ \
+	--disable-multilib --disable-bootstrap
+    cd -
+}
+
+do_040_make () {
+    cd ${BUILD_DIR}
+    make
+    cd -
+}
+
+do_050_make_check () {
+    cd ${BUILD_DIR}
+    make -k check >> $TEST_LOG 2>&1 || true
+    cd -	
+}
+
+do_060 () {
+    cd ${BUILD_DIR}
+    ../gcc-4.5.0/contrib/test_summary >> $TEST_LOG
+    cd -	
+}
+
+do_070_make_install () {
+    cd ${BUILD_DIR}
+    make install
+    cd -	
+}
+
+do_080 () {
+    cd ${BUILD_DIR}
+    ln -sv ../usr/bin/cpp /lib
+    ln -sv gcc /usr/bin/cc
+    cd -            	
+}
+
+do_090 () {
+    cd ${BUILD_DIR}
+    echo 'main(){}' > dummy.c
+    cc dummy.c -v -Wl,--verbose &> dummy.log
+    readelf -l a.out | grep ': /lib'
+    grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
+    grep -B4 '^ /usr/include' dummy.log
+    grep 'SEARCH.*/usr/lib' dummy.log |sed 's|; |\n|g'
+    grep "/lib.*/libc.so.6 " dummy.log
+    grep found dummy.log
+    rm -v dummy.c a.out dummy.log
+    cd -
+}
+
 exit

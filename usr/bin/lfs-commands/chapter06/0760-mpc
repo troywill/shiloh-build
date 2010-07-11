@@ -14,4 +14,8 @@ do_030_make_install () {
     make DESTDIR=/stow/mpc-0.8.2 install
 }
 
+do_010_configure
+do_020_make
+do_030_make_install
+
 exit
