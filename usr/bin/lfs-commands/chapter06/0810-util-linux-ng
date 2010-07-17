@@ -2,20 +2,29 @@
 set +h
 set -o errexit
 
-sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' \
-    -i $(grep -rl '/etc/adjtime' .)
-mkdir --parent -v /var/lib/hwclock
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/util-linux-ng.html
 
-do 010_configure {
+do_FHS_compliance () {
+    sed --expression='s@etc/adjtime@var/lib/hwclock/adjtime@g' \
+	--in-place $(grep --recursive --files-with-matches '/etc/adjtime' .)
+    mkdir --parent -v /var/lib/hwclock
+}
+    
+do_configure () {
     ./configure --enable-arch --enable-partx --enable-write
 }
 
-do 020_make {
+do_make () {
     make
 }
 
-do 030_make_install {
+do_make_install () {
     make DESTDIR=/stow/0810-util-linux-ng install
 }
+
+do_FHS_compliance
+do_configure
+do_make
+do_make_install
 
 exit
