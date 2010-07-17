@@ -1,13 +1,21 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
 sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' \
     -i $(grep -rl '/etc/adjtime' .)
-mkdir -pv /var/lib/hwclock
-./configure --enable-arch --enable-partx --enable-write
-make
-make install
-echo -e "\n\nTotalseconds: $SECONDS\n"
+mkdir --parent -v /var/lib/hwclock
+
+do 010_configure {
+    ./configure --enable-arch --enable-partx --enable-write
+}
+
+do 020_make {
+    make
+}
+
+do 030_make_install {
+    make DESTDIR=/stow/0810-util-linux-ng install
+}
+
 exit
