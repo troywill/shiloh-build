@@ -2,7 +2,10 @@
 set +h
 set -o errexit
 
+# http://www.linuxfromscratch.org/lfs/view/development/chapter06/e2fsprogs.html
+
 BUILD_DIR='build'
+DESTDIR='/stow/0820-e2fsprogs'
 
 do_prep () {
     mkdir -v ${BUILD_DIR}
@@ -24,13 +27,13 @@ do_make () {
 
 do_make_install () {
     cd ${BUILD_DIR}
-    make install
+    make DESTDIR=${DESTDIR} install
     cd -
 }
 
 do_make_install_libs () {
     cd ${BUILD_DIR}
-    make install-libs
+    make DESTDIR=${DESTDIR} install-libs
     cd -
 }
 
@@ -44,3 +47,10 @@ do_finalize () {
     install-info --dir-file=/usr/share/info/dir \
         /usr/share/info/com_err.info
 }
+
+# do_prep
+# do_configure
+# do_make
+# do_make_install
+# do_make_install_libs
+do_finalize
