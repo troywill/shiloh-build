@@ -1,23 +1,46 @@
 #!/bin/bash
 set +h
-set -e
+set -o errexit
 
-cd $PKGDIR
-mkdir -v build
-cd build
-../configure --prefix=/usr --with-root-prefix="" \
-    --enable-elf-shlibs --disable-libblkid --disable-libuuid \
-    --disable-uuidd --disable-fsck
-make
-make install
-make install-libs
-chmod -v u+w /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
-gunzip -v /usr/share/info/libext2fs.info.gz
-install-info --dir-file=/usr/share/info/dir \
-             /usr/share/info/libext2fs.info
-makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo
-install -v -m644 doc/com_err.info /usr/share/info
-install-info --dir-file=/usr/share/info/dir \
-             /usr/share/info/com_err.info
-echo -e "\n\nTotalseconds: $SECONDS\n"
-exit
+BUILD_DIR='build'
+
+do_prep () {
+    mkdir -v ${BUILD_DIR}
+}
+
+do_configure () {
+    cd ${BUILD_DIR}
+    ../configure --prefix=/usr --with-root-prefix="" \
+	--enable-elf-shlibs --disable-libblkid --disable-libuuid \
+	--disable-uuidd --disable-fsck
+    cd -
+}
+
+do_make () {
+    cd ${BUILD_DIR}
+    make
+    cd -
+}
+
+do_make_install () {
+    cd ${BUILD_DIR}
+    make install
+    cd -
+}
+
+do_make_install_libs () {
+    cd ${BUILD_DIR}
+    make install-libs
+    cd -
+}
+
+do_finalize () {
+    chmod -v u+w /usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
+    gunzip -v /usr/share/info/libext2fs.info.gz
+    install-info --dir-file=/usr/share/info/dir \
+        /usr/share/info/libext2fs.info
+    makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo
+    install -v -m644 doc/com_err.info /usr/share/info
+    install-info --dir-file=/usr/share/info/dir \
+        /usr/share/info/com_err.info
+}

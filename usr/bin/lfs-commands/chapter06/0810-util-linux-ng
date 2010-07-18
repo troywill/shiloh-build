@@ -23,8 +23,8 @@ do_make_install () {
 }
 
 do_FHS_compliance
-do_configure
-do_make
-do_make_install
+# do_configure
+# do_make
+# do_make_install
 
 exit
